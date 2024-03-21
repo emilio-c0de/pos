@@ -4,6 +4,7 @@ import { ConsolidacionFecha, Medida } from "./medida.model"
 export type OrderItem = {
     uuid: string;
     itemTypeCode: string;
+    itemTypeId?: number
     id: number;
     menuId: number;
     itemId: number;
@@ -12,6 +13,7 @@ export type OrderItem = {
     feeId: number; // idTarifa
     taxValue: number;
     quantity: number;
+    remainingQuantity?: number // se usa en division 
     cost: number;
     price: number;
     discount: number;
@@ -35,6 +37,8 @@ export type OrderItem = {
     medidas: Medida[];
     pvps: Tarifa[]
     consolidacionesFecha: ConsolidacionFecha[]
+    envioSri?: boolean
+    paid?: boolean
 }
 
 export type Order = {
@@ -44,18 +48,24 @@ export type Order = {
     customerCompanyId: number
     customerName: string
     createdAt: Date
+    subtotalSinImpuestos: number
     items: Array<OrderItem>
+    customDetail?: Array<OrderItem>
+    itemsToPay?: Array<OrderItem>
     tableId: number
     obs?: string | null
     tableName?: string
     establecimientoId: number
     puntoEmisionId: number
+    codDoc?: string
     tax: number
     discount: number
     tip: number
     total: number
-    quickSale: boolean
-    bodegaId: number
+    quickSale?: boolean
+    bodegaId?: number
+    saveDoc?:boolean
+    updateOrder?:boolean
 }
 
 
@@ -135,9 +145,13 @@ export interface OrderItemPost {
 export interface OrderPost {
     uuid: string,
     items: Array<OrderItemPost>,
+    customDetail?: Array<OrderItem>
+    itemsToPay?: Array<OrderItem>
     establecimientoId: number
     puntoEmisionId: number
     tableId: number
+    subtotalSinImpuestos: number
+    codDoc?: string
     customerCompanyId: number
     tax: number
     discount: number
@@ -146,6 +160,10 @@ export interface OrderPost {
     obs?: string | null,
     userId: number
     taxPercentId: number
+    quickSale?: boolean
+    saveDoc?: boolean
+    updateOrder?: boolean,
+    taxes: []
 }
 
 export interface OrderToSaveReturnData {
@@ -156,16 +174,4 @@ export interface OrderToSaveReturnData {
     payAutomatic: boolean,
     printerAutomatic: boolean
 }
-
-
-//Model Get Id
-export interface OrderUpdateDto extends Omit<Order, "quickSale" | "bodegaId"> {
-    serie: string
-    divided: boolean,
-}
-
-export interface OrderItemUpdateDto extends OrderItem { 
-    orderId: number,
-    itemTypeId: null, 
-    remainingQuantity: number,
-}
+ 

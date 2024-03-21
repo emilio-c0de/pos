@@ -4,6 +4,7 @@ import { configSvc } from '@/services/config.service'
 import { orderSvc } from '@/services/order.service'
 import { getDataEstab } from '@/services/persist-user.service'
 import { useDivideStore } from '@/store/order/divide/divide.slice'
+import { DIVIDE_STATUS_REFRESH } from '@/store/order/divide/divide.type'
 import { useSharedStore } from '@/store/pos/shared.slice'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -17,7 +18,7 @@ import DivideContent from './components/DivideContent'
 
 type DivideProps = {
     orderId: number
-    close(): void
+    close<T>(data?: T): void
 }
 const Divide = ({ close, orderId }: DivideProps) => {
     const sharedStore = useSharedStore(useShallow(state => state))
@@ -55,11 +56,23 @@ const Divide = ({ close, orderId }: DivideProps) => {
         }
     }
 
+
+
     useEffect(() => {
         getDataForm();
         getDataOrderById();
+        return () => {
+            divideStore.resetState();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (divideStore.REFRESH_CONTENT_DIVIDE === DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE) {
+            getDataOrderById();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [divideStore.REFRESH_CONTENT_DIVIDE])
 
     return (
         <>
@@ -69,7 +82,7 @@ const Divide = ({ close, orderId }: DivideProps) => {
                         <IconButton
                             edge="start"
                             color="inherit"
-                            onClick={close}
+                            onClick={() => close(divideStore.REFRESH_CONTENT_DIVIDE)}
                             aria-label="close"
                         >
                             <CloseIcon />

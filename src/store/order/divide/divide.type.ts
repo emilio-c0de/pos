@@ -1,13 +1,16 @@
-import { OrderUpdateDto } from "@/models/order.model";
+import { Order } from "@/models/order.model";
+
+export const enum DIVIDE_STATUS_REFRESH {
+    REFRESH_CONTENT_DIVIDE = "REFRESH_CONTENT_DIVIDE",
+    REFRESH_ORDER_LIST = "REFRESH_ORDER_LIST"
+}
 
 export interface OrderDataStore {
-    order: OrderUpdateDto
+    order: Order
 }
 
 export const orderDataStoreInitial: OrderDataStore = {
     order: {
-        serie: "",
-        divided: false,
         uuid: "",
         orderId: 0,
         userId: 0,
@@ -21,6 +24,7 @@ export const orderDataStoreInitial: OrderDataStore = {
         tax: 0,
         discount: 0,
         tip: 0,
-        total: 0
+        total: 0,
+        subtotalSinImpuestos: 0
     }
 }

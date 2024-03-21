@@ -1,4 +1,5 @@
 import CustomDateRange from '@/components/common/CustomDateRange';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { ClearIcon, InsertDriveFileIcon, MenuIcon, PointOfSaleIcon, RefreshIcon } from '@/components/common/IconsMaterial';
 import PaginationCustom from '@/components/common/PaginationCustom';
 import CompanyCustomerSearch from '@/components/company-customer/CompanyCustomerSearch';
@@ -11,6 +12,7 @@ import { TableOrderFilter } from '@/models/table.model';
 import { UserSelectHtmlOnly } from '@/models/user.model';
 import { orderSvc } from '@/services/order.service';
 import { getDataEstab } from '@/services/persist-user.service';
+import { DIVIDE_STATUS_REFRESH } from '@/store/order/divide/divide.type';
 import { formatDateMoment } from '@/utils/format-date-moment';
 import { hideLoader, showLoader } from '@/utils/loader';
 import { isValidField } from '@/utils/utils';
@@ -166,14 +168,26 @@ const Order = () => {
     getOrders();
   }
 
+  /**
+   * =============START DIVIDE====================
+   */
   const openModalDivide = (item: OrderRead) => {
     console.log(item)
     openDialog({
       maxWidth: "lg",
       fullScreen: true,
-      children: <Divide close={closeDialog} orderId={item.id} />,
+      children: <Divide close={closeDialogDivide} orderId={item.id} />,
     })
   }
+  function closeDialogDivide<T>(data: T) {
+    closeDialog()
+    if (data === DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE) {
+      getOrders();
+    }
+  }
+  /**
+   * =============END DIVIDE====================
+   */
 
   const btnDivided = (order: OrderRead) => {
     if (order.finished) return
@@ -232,169 +246,173 @@ const Order = () => {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Grid container>
-          <Grid container >
-            <Grid item xs={5} alignSelf="center">
-              <Typography variant="h6" display="block" gutterBottom >
-                Ordenes
-              </Typography>
-            </Grid>
-            <Grid item xs={7} alignSelf="center" textAlign="end">
-              <Button color="info" variant="contained"   >
-                Nuevo
-              </Button>
-            </Grid>
-          </Grid>
+    <>
+      <ErrorBoundary fallBackComponent={<>Error</>}>
+        <Card>
+          <CardContent>
+            <Grid container>
+              <Grid container >
+                <Grid item xs={5} alignSelf="center">
+                  <Typography variant="h6" display="block" gutterBottom >
+                    Ordenes
+                  </Typography>
+                </Grid>
+                <Grid item xs={7} alignSelf="center" textAlign="end">
+                  <Button color="info" variant="contained"   >
+                    Nuevo
+                  </Button>
+                </Grid>
+              </Grid>
 
-          <Grid container m={1} spacing={1}>
-            <Grid item xl={4} lg={4} md={4} sm={4} xs={12} alignSelf="center">
-              {establecimientos.length > 0 && <TextField fullWidth
-                id="establecimientos"
-                name="establecimientos"
-                label="Establecimiento"
-                size='small'
-                select
-                value={dataSearch.codEstab}
-              >
-                {
-                  establecimientos.map((item, index) => (
-                    <MenuItem value={item.codEstab} key={index}>
-                      {item.nombreComercial}
-                    </MenuItem>
-                  ))
-                }
-              </TextField>
-              }
-            </Grid>
-            <Grid item xl={3} lg={3} md={4} sm={4} xs={12} alignSelf="center">
-              <CustomDateRange onChangeDateRange={onChangeDateRange} />
-            </Grid>
-            <Grid item xl={4} lg={4} md={4} sm={4} xs={12} alignSelf="center">
-              <CompanyCustomerSearch basic={true} callbackfn={getDataCustomer} />
-            </Grid>
-            <Grid item>
-              <Stack direction="row" spacing={0} width={50}>
-                {/* <IconButton color='primary' onClick={refresh}>
+              <Grid container m={1} spacing={1}>
+                <Grid item xl={4} lg={4} md={4} sm={4} xs={12} alignSelf="center">
+                  {establecimientos.length > 0 && <TextField fullWidth
+                    id="establecimientos"
+                    name="establecimientos"
+                    label="Establecimiento"
+                    size='small'
+                    select
+                    value={dataSearch.codEstab}
+                  >
+                    {
+                      establecimientos.map((item, index) => (
+                        <MenuItem value={item.codEstab} key={index}>
+                          {item.nombreComercial}
+                        </MenuItem>
+                      ))
+                    }
+                  </TextField>
+                  }
+                </Grid>
+                <Grid item xl={3} lg={3} md={4} sm={4} xs={12} alignSelf="center">
+                  <CustomDateRange onChangeDateRange={onChangeDateRange} />
+                </Grid>
+                <Grid item xl={4} lg={4} md={4} sm={4} xs={12} alignSelf="center">
+                  <CompanyCustomerSearch basic={true} callbackfn={getDataCustomer} />
+                </Grid>
+                <Grid item>
+                  <Stack direction="row" spacing={0} width={50}>
+                    {/* <IconButton color='primary' onClick={refresh}>
                   <VisibilityIcon />
                 </IconButton> */}
-                <Tooltip title="Recargar">
-                  <IconButton color='info' onClick={refresh}>
-                    <RefreshIcon />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Grid>
-          </Grid>
-          <Grid container m={1} spacing={1}>
+                    <Tooltip title="Recargar">
+                      <IconButton color='info' onClick={refresh}>
+                        <RefreshIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                </Grid>
+              </Grid>
+              <Grid container m={1} spacing={1}>
 
-            <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
-              {puntosEmision.length > 0 && <TextField fullWidth
-                id="puntosEmision"
-                name="puntosEmision"
-                label="Punto Emisión"
-                size='small'
-                select
-                value={dataSearch.idPuntoEmision || ''}
-                onChange={(e) => setChangeFieldFilter("idPuntoEmision", Number(e.target.value))}
-              >
-                {
-                  puntosEmision.map((item, index) => (
-                    <MenuItem value={item.idPuntoEmision} key={index}>
-                      {item.ptoEmi}
-                    </MenuItem>
-                  ))
-                }
-              </TextField>
-              }
-            </Grid>
-            <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
-              <UserSelectfilter
-                onChange={(e) => setChangeFieldFilter("userId", Number(e.target.value))}
-                value={dataSearch.userId.toString()}
-                users={users} />
-            </Grid>
-            <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
-              <TableSelectFilter
-                tables={tables}
-                onChange={(value) => setChangeFieldFilter("tableId", value)}
-                value={dataSearch.userId.toString()}
-              />
-            </Grid>
-            <Grid item xl={4} lg={4} md={4} sm={4} xs={12} >
-              <FormControl>
-                <RadioGroup row
-                  name="tipoOrden"
-                  value={dataSearch.tipoOrden}
-                  onChange={(e) => setChangeFieldFilter("tipoOrden", e.target.value)}
-                >
-                  <FormControlLabel value={"SD"} control={<Radio />} label="Sin Doc." />
-                  <FormControlLabel value={"CD"} control={<Radio />} label="Con Doc." />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-          </Grid>
+                <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
+                  {puntosEmision.length > 0 && <TextField fullWidth
+                    id="puntosEmision"
+                    name="puntosEmision"
+                    label="Punto Emisión"
+                    size='small'
+                    select
+                    value={dataSearch.idPuntoEmision || ''}
+                    onChange={(e) => setChangeFieldFilter("idPuntoEmision", Number(e.target.value))}
+                  >
+                    {
+                      puntosEmision.map((item, index) => (
+                        <MenuItem value={item.idPuntoEmision} key={index}>
+                          {item.ptoEmi}
+                        </MenuItem>
+                      ))
+                    }
+                  </TextField>
+                  }
+                </Grid>
+                <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
+                  <UserSelectfilter
+                    onChange={(e) => setChangeFieldFilter("userId", Number(e.target.value))}
+                    value={dataSearch.userId.toString()}
+                    users={users} />
+                </Grid>
+                <Grid item xl={2} lg={2} md={4} sm={4} xs={12} alignSelf="center">
+                  <TableSelectFilter
+                    tables={tables}
+                    onChange={(value) => setChangeFieldFilter("tableId", value)}
+                    value={dataSearch.userId.toString()}
+                  />
+                </Grid>
+                <Grid item xl={4} lg={4} md={4} sm={4} xs={12} >
+                  <FormControl>
+                    <RadioGroup row
+                      name="tipoOrden"
+                      value={dataSearch.tipoOrden}
+                      onChange={(e) => setChangeFieldFilter("tipoOrden", e.target.value)}
+                    >
+                      <FormControlLabel value={"SD"} control={<Radio />} label="Sin Doc." />
+                      <FormControlLabel value={"CD"} control={<Radio />} label="Con Doc." />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              </Grid>
 
 
-          <TableContainer component={Paper} elevation={0} sx={{ maxHeight: 400 }}>
-            <Table stickyHeader size="small">
-              <TableHead >
-                <TableRow>
-                  <StyledTableCell>Op.</StyledTableCell>
-                  <StyledTableCell>N°.</StyledTableCell>
-                  <StyledTableCell>Nro. Documento</StyledTableCell>
-                  <StyledTableCell>Fecha Emisión</StyledTableCell>
-                  <StyledTableCell>Cliente</StyledTableCell>
-                  <StyledTableCell>Total</StyledTableCell>
-                  <StyledTableCell>Mesa</StyledTableCell>
-                  <StyledTableCell>Usuario</StyledTableCell>
-                  <StyledTableCell>Estado</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {
-                  orders.map((item, index) => (
-                    <TableRow key={index}>
-                      {optionMenu(item)}
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item.serie}</TableCell>
-                      <TableCell>{item.createdAt}</TableCell>
-                      <TableCell>{item.razonSocialComprador}</TableCell>
-                      <TableCell>${item.total}</TableCell>
-                      <TableCell>{item.tableName}</TableCell>
-                      <TableCell>{item.userName}</TableCell>
-                      <TableCell>
-                        <PrimaryStatusTable status={item.enabled} />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                }
-                {
-                  orders.length === 0 && (
+              <TableContainer component={Paper} elevation={0} sx={{ maxHeight: 400 }}>
+                <Table stickyHeader size="small">
+                  <TableHead >
                     <TableRow>
-                      <TableCell colSpan={9} align='center'>
-                        No hay datos
-                      </TableCell>
+                      <StyledTableCell>Op.</StyledTableCell>
+                      <StyledTableCell>N°.</StyledTableCell>
+                      <StyledTableCell>Nro. Documento</StyledTableCell>
+                      <StyledTableCell>Fecha Emisión</StyledTableCell>
+                      <StyledTableCell>Cliente</StyledTableCell>
+                      <StyledTableCell>Total</StyledTableCell>
+                      <StyledTableCell>Mesa</StyledTableCell>
+                      <StyledTableCell>Usuario</StyledTableCell>
+                      <StyledTableCell>Estado</StyledTableCell>
                     </TableRow>
-                  )
-                }
+                  </TableHead>
+                  <TableBody>
+                    {
+                      orders.map((item, index) => (
+                        <TableRow key={index}>
+                          {optionMenu(item)}
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{item.serie}</TableCell>
+                          <TableCell>{item.createdAt}</TableCell>
+                          <TableCell>{item.razonSocialComprador}</TableCell>
+                          <TableCell>${item.total}</TableCell>
+                          <TableCell>{item.tableName}</TableCell>
+                          <TableCell>{item.userName}</TableCell>
+                          <TableCell>
+                            <PrimaryStatusTable status={item.enabled} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    }
+                    {
+                      orders.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={9} align='center'>
+                            No hay datos
+                          </TableCell>
+                        </TableRow>
+                      )
+                    }
 
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Grid mt={3}>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Grid mt={3}>
 
-            <PaginationCustom
-              items={orders}
-              totalRecords={orders.length > 0 ? orders[0].totalRecords : 0}
-              pageSize={dataSearch.pageSize}
-              setPageIndex={setPageIndex}
-            />
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+                <PaginationCustom
+                  items={orders}
+                  totalRecords={orders.length > 0 ? orders[0].totalRecords : 0}
+                  pageSize={dataSearch.pageSize}
+                  setPageIndex={setPageIndex}
+                />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </ErrorBoundary>
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Bounce, Flip, Slide, Zoom, toast } from 'react-toastify';
+import { Bounce, Flip, Slide, toast, Zoom } from 'react-toastify';
 
 export enum ToastType {
     Success = "success",
@@ -51,7 +51,7 @@ export const notify = (props: ToastProps) => {
 
     const trans = transitionMap[transition || 'Flip'];
 
-    const toastOptions = {
+    const toastOptions = { 
         position,
         autoClose,
         hideProgressBar,

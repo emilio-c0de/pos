@@ -1,4 +1,5 @@
-import { Order, OrderItem, OrderItemPost, OrderItemUpdateDto, OrderPost, OrderRead, OrderUpdateDto } from "@/models/order.model";
+import { Order, OrderItem, OrderItemPost, OrderPost, OrderRead } from "@/models/order.model";
+import { isValidField } from "@/utils/utils";
 
 import { productAdapter } from "./product.adapter";
 
@@ -42,7 +43,7 @@ class OrderAdapter {
 
     postTo(order: Order): OrderPost {
         const items = this.itemsTo(order.items);
-        const data = {
+        const data: OrderPost = {
             uuid: order.uuid,
             items,
             establecimientoId: order.establecimientoId,
@@ -53,17 +54,25 @@ class OrderAdapter {
             discount: order.discount,
             tip: order.tip,
             total: order.total,
-            obs: order.obs,
+            obs: isValidField(order.obs),
             userId: order.userId,
-            taxPercentId: 0
+            taxPercentId: 0,
+            quickSale: order.quickSale,
+            subtotalSinImpuestos: order.subtotalSinImpuestos,
+            codDoc: order.codDoc,
+            itemsToPay: order.itemsToPay,
+            customDetail: order.customDetail,
+            saveDoc: order.saveDoc,
+            updateOrder: order.updateOrder,
+            taxes: []
         }
         return data;
     }
 
-    getIdFrom(data: any): { order: OrderUpdateDto } {
+    getIdFrom(data: any): { order: Order } {
         const { order, orderItems } = data;
 
-        const orderItemsMapper: OrderItemUpdateDto[] = orderItems.map((orderItem: any) => {
+        const orderItemsMapper: OrderItem[] = orderItems.map((orderItem: any) => {
 
             //let pvps: Array<ProductPVPReadDto> = [];
 
@@ -112,11 +121,10 @@ class OrderAdapter {
              */
             const dataMedida = measures.find(m => m.idMedida === restOrderItem.medidaId);
 
-            const obj: OrderItemUpdateDto = {
+            const obj: OrderItem = {
                 productId: restOrderItem.idArticulo,
                 id: restOrderItem.id,
                 uuid: restOrderItem.uuid,
-                orderId: restOrderItem.orderId,
                 itemId: restOrderItem.itemId,
                 itemTypeId: restOrderItem.itemTypeId,
                 taxId: restOrderItem.taxId,
@@ -152,7 +160,7 @@ class OrderAdapter {
 
         })
 
-        const orderMapper: OrderUpdateDto = {
+        const orderMapper: Order = {
             customerName: order.customerName,
             tableName: order.tableName,
             orderId: order.id,
@@ -160,14 +168,12 @@ class OrderAdapter {
             establecimientoId: order.establecimientoId,
             puntoEmisionId: order.puntoEmisionId,
             tableId: order.tableId,
-            serie: order.serie,
             customerCompanyId: order.customerCompanyId,
             tax: order.tax,
             discount: order.discount,
             tip: order.tip,
             total: order.total,
             obs: order.obs,
-            divided: order.divided,
             createdAt: order.createdAt,
             userId: order.userId,
             items: orderItemsMapper

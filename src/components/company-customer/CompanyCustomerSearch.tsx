@@ -120,13 +120,17 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
         const elem = document.getElementById('customerSearch') as HTMLInputElement;
         const textSearch = elem.value;
 
-        companyCustomerId.current = 0;
+       // companyCustomerId.current = 0;
         setDataSriEmpty();
         if (textSearch) {
             onSearchToSRI(textSearch)
             return
         }
-        openAddDialog();
+      //  openAddDialog();
+        openDialog({
+            maxWidth: 'sm',
+            children: <CompanyCustomerAddEditDialog closeDialog={closeDialog}   />
+        })
 
 
     }
@@ -262,6 +266,10 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
                 }
             }
 
+            openDialog({
+                maxWidth: 'sm',
+                children: <CompanyCustomerAddEditDialog closeDialog={closeDialog} />
+            })
         } catch (error) {
             console.log(error)
         }

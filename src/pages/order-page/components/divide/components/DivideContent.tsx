@@ -71,9 +71,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     const openCustomOrderItemDialog = () => {
         openDialog({
             maxWidth: 'md',
-            children: <CustomOrderItem close={closeDialog} selected={selected} />
+            children: <CustomOrderItem close={closeDialog} />
         })
-    }
+    } 
+
     return (
         <Toolbar
             sx={{

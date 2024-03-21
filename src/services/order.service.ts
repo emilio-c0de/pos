@@ -64,9 +64,10 @@ class OrderService {
         return orderAdapter.getIdFrom(params)
     }
     async put<T>(id: number, data: T) {
+        console.log(`${this.url}${id}`)
         const resultAxios = await http({
             method: 'put',
-            url: `${PATHS_API.PRIVATE}${URL}/${id}`,
+            url: `${this.url}${id}`,
             data: { data }
         })
 
