@@ -568,3 +568,43 @@ button::-moz-focus-inner,
 .show>.btn-danger.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(232, 128, 139, 0.5);
 }
+
+.btn-primary {
+  color: #fff;
+  background-color: #d61672;
+  border-color: #d61672;
+}
+
+.btn-danger:hover {
+  color: #fff;
+  background-color: #de4a58;
+  border-color: #dc3f4e;
+}
+
+.btn-danger:focus,
+.btn-danger.focus {
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(214,22,114, 0.5);
+}
+
+.btn-danger.disabled,
+.btn-danger:disabled {
+  color: #fff;
+  background-color: #d61672;
+  border-color: #d61672;
+}
+
+.btn-danger:not(:disabled):not(.disabled):active,
+.btn-danger:not(:disabled):not(.disabled).active,
+.show>.btn-danger.dropdown-toggle {
+  color: #fff;
+  background-color: #d61672;
+  border-color: #d61672;
+}
+
+.btn-danger:not(:disabled):not(.disabled):active:focus,
+.btn-danger:not(:disabled):not(.disabled).active:focus,
+.show>.btn-danger.dropdown-toggle:focus {
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(214, 22, 114, 0.5);
+}

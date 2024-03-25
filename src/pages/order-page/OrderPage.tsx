@@ -15,16 +15,20 @@ import { getDataEstab } from '@/services/persist-user.service';
 import { DIVIDE_STATUS_REFRESH } from '@/store/order/divide/divide.type';
 import { formatDateMoment } from '@/utils/format-date-moment';
 import { hideLoader, showLoader } from '@/utils/loader';
-import { isValidField } from '@/utils/utils';
+import { ccyFormat, isValidField } from '@/utils/utils';
 import ModeTwoToneIcon from '@mui/icons-material/ModeTwoTone';
 import { Button, Card, CardContent, FormControl, FormControlLabel, Grid, IconButton, Menu, MenuItem, Paper, Radio, RadioGroup, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material';
 import { produce } from 'immer';
 import { useEffect, useState } from 'react';
 
 import Divide from './components/divide/Divide';
+import TableSelectFilter from './components/filter/TableSelectFilter';
+import UserSelectfilter from './components/filter/UserSelectfilter';
 import OrderDoc from './components/OrderDoc';
-import TableSelectFilter from './components/TableSelectFilter';
-import UserSelectfilter from './components/UserSelectfilter';
+
+interface AnchorElState {
+  [key: string]: HTMLElement | null;
+}
 
 const Order = () => {
   const [openDialog, closeDialog,] = useDialog();
@@ -35,16 +39,18 @@ const Order = () => {
   const [tables, setTables] = useState<Array<TableOrderFilter>>([])
   const [users, setUsers] = useState<Array<UserSelectHtmlOnly>>([])
   const [orders, setOrders] = useState<Array<OrderRead>>([]);
-
-  //Opciones 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+ 
+  // Define un estado para almacenar el ancla del menú para cada fila
+  const [anchorEl, setAnchorEl] = useState<AnchorElState>({}); 
+ 
+  // Handler para abrir el menú de una fila específica
+  const handleClick = (event: React.MouseEvent<HTMLElement>, orderId: string) => {
+    setAnchorEl({ ...anchorEl, [orderId]: event.currentTarget });
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+
+  // Handler para cerrar el menú de una fila específica
+  const handleClose = (orderId: string) => {
+    setAnchorEl({ ...anchorEl, [orderId]: null });
   };
 
   const [dataSearch, setDataSearch] = useState({
@@ -145,10 +151,11 @@ const Order = () => {
       ))
   }
 
-  function openModalDoc(id: number, data: OrderRead) {
+  function openModalDoc(id: number, item: OrderRead) {
+    handleClose(item.uuid)
     openDialog({
       maxWidth: 'md',
-      children: <OrderDoc id={id} data={data} close={() => closeDialog()} />,
+      children: <OrderDoc id={id} data={item} close={() => closeDialog()} />,
     })
   }
 
@@ -207,25 +214,22 @@ const Order = () => {
     return <>
       <TableCell component="th" scope="row">
         <IconButton
-          id="basic-button"
-          aria-controls={open ? 'basic-menu' : undefined}
+          id={`button-option-${item.uuid}`}
+          aria-controls={anchorEl[item.uuid] ? `basic-menu-${item.uuid}` : undefined}
           aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
+          aria-expanded={anchorEl[item.uuid] ? 'true' : undefined}
+          onClick={(event) => handleClick(event, item.uuid)}
         >
           <MenuIcon />
         </IconButton>
 
         <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
+          id={`button-option-${item.uuid}`}
+          anchorEl={anchorEl[item.uuid]}
+          open={Boolean(anchorEl[item.uuid])}
+          onClose={() => handleClose(item.uuid)}
         >
-          <MenuItem onClick={() => openModalDoc(item.id, item)}>
+          <MenuItem onClick={() =>  openModalDoc(item.id, item)}>
             <InsertDriveFileIcon color='info' />
             Docs.
           </MenuItem>
@@ -377,7 +381,7 @@ const Order = () => {
                           <TableCell>{item.serie}</TableCell>
                           <TableCell>{item.createdAt}</TableCell>
                           <TableCell>{item.razonSocialComprador}</TableCell>
-                          <TableCell>${item.total}</TableCell>
+                          <TableCell>{ccyFormat(item.total)}</TableCell>
                           <TableCell>{item.tableName}</TableCell>
                           <TableCell>{item.userName}</TableCell>
                           <TableCell>

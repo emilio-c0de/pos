@@ -6,6 +6,7 @@ import { getDataEstab } from '@/services/persist-user.service'
 import { useDivideStore } from '@/store/order/divide/divide.slice'
 import { DIVIDE_STATUS_REFRESH } from '@/store/order/divide/divide.type'
 import { useSharedStore } from '@/store/pos/shared.slice'
+import { hideLoader, showLoader } from '@/utils/loader'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -48,9 +49,14 @@ const Divide = ({ close, orderId }: DivideProps) => {
 
     const getDataOrderById = () => {
         try {
+            showLoader();
             orderSvc.getId(orderId).then(response => {
-                divideStore.setOrderData(response)
+                divideStore.initLoadOrderData(response)
             })
+                .catch(error => {
+                    console.log(error)
+                })
+                .finally(() => hideLoader())
         } catch (error) {
             console.log(error)
         }

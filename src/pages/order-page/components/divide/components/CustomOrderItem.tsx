@@ -196,11 +196,11 @@ const CustomOrderItem = ({ close }: CustomOrderItemProps) => {
             const cloneOrder = {
                 ...orderData.order,
                 customerCompanyId: data.customerCompanyId,
+                obs: data.obs,
                 items: customOrderItems.map(item => {
                     return {
                         ...item,
                         descripcion: data.description,
-                        obs: data.obs
                     }
                 })
             }
@@ -288,10 +288,10 @@ const CustomOrderItem = ({ close }: CustomOrderItemProps) => {
             <DialogHeader title='Detalle Personalizado' close={() => close()} />
             <DialogContent dividers>
                 <Grid container spacing={1} marginBottom={2}>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={12} lg={6} xl={6}>
                         <CompanyCustomerSearch callbackfn={getDataCustomer} advanced id={data.customerCompanyId} customerName={data.customerName} />
                     </Grid>
-                    <Grid item xs={6} >
+                    <Grid item xs={12} sm={12} lg={6} xl={6}>
                         <ProductSearch onChange={onChangeProduct} />
                     </Grid>
                 </Grid>

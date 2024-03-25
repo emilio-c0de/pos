@@ -52,7 +52,7 @@ var DateRangePicker;
 
         this.buttonClasses = 'btn btn-sm';
         this.applyButtonClasses = 'btn-primary';
-        this.cancelButtonClasses = 'btn-default';
+        this.cancelButtonClasses = 'btn-danger';
 
         this.locale = {
             direction: 'ltr',
@@ -1670,7 +1670,7 @@ var DateRangePicker;
                 if (this.elementChangedProxy) {
                     jq.off(this.element, 'keyup', this.elementChangedProxy);
                     delete this.elementChangedProxy;
-                };
+                }
                 if (this.keydownProxy) {
                     jq.off(this.element, 'keydown', this.keydownProxy);
                     delete this.keydownProxy;
@@ -1680,7 +1680,7 @@ var DateRangePicker;
                     jq.off(this.element, 'click', this.toggleProxy);
                     jq.off(this.element, 'keydown', this.toggleProxy);
                     delete this.toggleProxy;
-                };
+                }
             }
             let drpCalendarElList = this.container.querySelectorAll('.drp-calendar');
             if (this.clickPrevProxy) {

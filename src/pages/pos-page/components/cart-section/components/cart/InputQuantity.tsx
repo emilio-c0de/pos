@@ -47,8 +47,7 @@ const InputQuantity = ({ item, changeInputQuantity }: InputQuantityProps) => {
     }
 
     const onBlurInput = (quantity: string) => {
-        const numericValue = Number(quantity);
-        console.log(numericValue)
+        const numericValue = Number(quantity); 
         if (isValidField(quantity) && !isNaN(numericValue) && numericValue !== 0) {
 
             setQuantity(() => numericValue);

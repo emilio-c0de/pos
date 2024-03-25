@@ -1,4 +1,4 @@
-import { Order } from "@/models/order.model";
+import { Order, OrderItem } from "@/models/order.model";
 
 export const enum DIVIDE_STATUS_REFRESH {
     REFRESH_CONTENT_DIVIDE = "REFRESH_CONTENT_DIVIDE",
@@ -7,6 +7,10 @@ export const enum DIVIDE_STATUS_REFRESH {
 
 export interface OrderDataStore {
     order: Order
+}
+
+export interface OrderItemDivide extends OrderItem {
+    remainingQuantityReal: number
 }
 
 export const orderDataStoreInitial: OrderDataStore = {

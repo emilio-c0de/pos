@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { ThemeConfig } from './config/theme.config.tsx';
 
-import './index.css'; 
+import './index.css';
+import '@/assets/css/vanilla-datetimerange-picker.css'
 import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

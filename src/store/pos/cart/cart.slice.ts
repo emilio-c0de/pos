@@ -1,4 +1,5 @@
 import { Order, OrderItem } from "@/models/order.model";
+import { generateUuidv4 } from "@/utils/generate-uuidv4";
 import { addSound, clearSound } from "@/utils/sound.util";
 import { produce } from "immer";
 import { create, StateCreator } from "zustand"
@@ -134,6 +135,7 @@ const createCartSlice: StateCreator<
     },
     resetForm() {
         set(produce((state: CartState) => {
+            state.order.uuid = generateUuidv4()
             state.order.tableId = 0;
             state.order.tableName = "";
             state.order.obs = "";

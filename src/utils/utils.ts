@@ -5,6 +5,8 @@ import { TaxRate } from "@/models/tax-rate.model";
 import { Tax } from "@/models/tax.model";
 import { sharedSvc } from "@/services/shared.service";
 
+import { roundNumber } from "./round-number.util";
+
 export function formatDateShort(date: Date): string {
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return date.toLocaleDateString('en-US', options);
@@ -24,8 +26,8 @@ export function isNumber(valor: string): boolean {
     return regex.test(valor);
 }
 
-export function ccyFormat(num: number) {
-    return `$${num.toFixed(2)}`;
+export function ccyFormat(num: number, max?: number) {
+    return `$${roundNumber(num, max)}`;
 }
 
 export const isValidField = <T>(field: T): T | null => {

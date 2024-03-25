@@ -21,6 +21,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoDisturbOnTwoToneIcon from '@mui/icons-material/DoDisturbOnTwoTone';
 import EditIcon from '@mui/icons-material/Edit';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -34,6 +35,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import MoreIcon from "@mui/icons-material/MoreVert";
 import MoveUpIcon from '@mui/icons-material/MoveUp';
+import NextPlanIcon from '@mui/icons-material/NextPlan';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PaymentIcon from '@mui/icons-material/Payment';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -131,5 +133,7 @@ export {
     SyncProblemIcon, //✅
     ProductionQuantityLimitsIcon, //✅
     TableRestaurantIcon, //✅
-    VisibilityIcon //✅
+    VisibilityIcon, //✅
+    EditNoteIcon, //✅
+    NextPlanIcon,  //✅
 }

@@ -44,6 +44,7 @@ class OrderAdapter {
     postTo(order: Order): OrderPost {
         const items = this.itemsTo(order.items);
         const data: OrderPost = {
+
             uuid: order.uuid,
             items,
             establecimientoId: order.establecimientoId,
@@ -121,6 +122,7 @@ class OrderAdapter {
              */
             const dataMedida = measures.find(m => m.idMedida === restOrderItem.medidaId);
 
+            const precioTotalSinImpuesto = ((restOrderItem.price * restOrderItem.quantity)) - restOrderItem.discount
             const obj: OrderItem = {
                 productId: restOrderItem.idArticulo,
                 id: restOrderItem.id,
@@ -151,10 +153,11 @@ class OrderAdapter {
                 taxPercent: restOrderItem.taxPercent,
                 menuId: restOrderItem.menuId,
                 itemTypeCode: restOrderItem.itemTypeCode,
-                remainingQuantity: restOrderItem.remainingQuantity,
+                remainingQuantity: restOrderItem.remainingQuantity || 0,
                 medida: restOrderItem.medida,
-                precioTotalSinImpuesto: restOrderItem.precioTotalSinImpuesto,
-                consolidacionesFecha: []
+                precioTotalSinImpuesto: precioTotalSinImpuesto,
+                consolidacionesFecha: [],
+                paid: restOrderItem.paid
             }
             return obj;
 
@@ -176,7 +179,8 @@ class OrderAdapter {
             obs: order.obs,
             createdAt: order.createdAt,
             userId: order.userId,
-            items: orderItemsMapper
+            items: orderItemsMapper,
+            subtotalSinImpuestos: 0
         }
 
 
@@ -190,21 +194,24 @@ class OrderAdapter {
     private itemsTo(items: OrderItem[]): OrderItemPost[] {
         const results = items.map(item => {
             return {
+                orderItemId: item.id,
                 uuid: item.uuid,
-                itemTypeCode: item.itemTypeCode,
-                menuId: item.menuId,
-                itemId: item.itemId,
+                itemId: item.itemId || 0,
+                feeId: item.feeId,
                 taxId: item.taxId,
                 taxPercentId: item.taxPercentId,
-                feeId: item.feeId,
+                //  description: item.description,
                 taxValue: item.taxValue,
                 quantity: item.quantity,
                 cost: item.cost,
                 price: item.price,
                 discount: item.discount,
                 total: item.total,
-                obs: item.obs,
+                obs: isValidField(item.obs),
+                itemTypeCode: item.itemTypeCode,
+                menuId: item.menuId || 0,
                 bodegaId: item.bodegaId,
+                envioSri: item.envioSri,
                 medidaId: item.medidaId
             }
         })
