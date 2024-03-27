@@ -12,6 +12,7 @@ export const getOrderInitialState = (): Order => {
         obs: null,
         tableId: 0,
         tableName: '',
+        subtotalSinImpuestos: 0,
         establecimientoId: 0, 
         orderId: 0,
         puntoEmisionId: 0,
