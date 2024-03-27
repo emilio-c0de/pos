@@ -179,7 +179,7 @@ const Order = () => {
    * =============START DIVIDE====================
    */
   const openModalDivide = (item: OrderRead) => {
-    console.log(item)
+    handleClose(item.uuid)
     openDialog({
       maxWidth: "lg",
       fullScreen: true,
@@ -188,7 +188,7 @@ const Order = () => {
   }
   function closeDialogDivide<T>(data: T) {
     closeDialog()
-    if (data === DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE) {
+    if (data === DIVIDE_STATUS_REFRESH.REFRESH_ORDER_LIST) {
       getOrders();
     }
   }

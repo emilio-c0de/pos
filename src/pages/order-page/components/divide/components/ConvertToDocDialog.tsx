@@ -1,20 +1,22 @@
 import { orderAdapter } from '@/adapters/order.adapter'
 import CompanyCustomerSearch from '@/components/company-customer/CompanyCustomerSearch'
+import Payment from '@/components/payment/Payment'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { DOC_TYPE } from '@/constants/constants'
+import { useDialog } from '@/context/DialogProvider'
 import { OrderToSaveReturnData } from '@/models/order.model'
 import { orderSvc } from '@/services/order.service'
 import { useDivideStore } from '@/store/order/divide/divide.slice'
-import { OrderItemDivide } from '@/store/order/divide/divide.type'
+import { DIVIDE_STATUS_REFRESH, OrderItemDivide } from '@/store/order/divide/divide.type'
 import { hideLoader, showLoader } from '@/utils/loader'
 import { pricingCalculateUtil } from '@/utils/pricing-calculate.util'
 import { notify, ToastType } from '@/utils/toastify/toastify.util'
-import { ccyFormat } from '@/utils/utils'
+import { ccyFormat, getPrinterFactura, getPrinterNotaEntrega } from '@/utils/utils'
 import { Box, Button, DialogActions, Stack, TextField, Typography } from '@mui/material'
 import DialogContent from '@mui/material/DialogContent'
 import Grid from '@mui/material/Grid'
 import { produce } from 'immer'
-import React, { useState } from 'react'
+import { useRef, useState } from 'react'
 import Swal from 'sweetalert2'
 
 const typeActions: { [key: string]: string } = {
@@ -37,19 +39,24 @@ const getDataTotalDetalle = (orderItem: OrderItemDivide) => {
 
 type ConvertToDocDialogProps = {
   close(): void
-  selected: readonly number[]
 }
 
 
-const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
-  const { orderData, orderDivideItems } = useDivideStore(state => state);
+const ConvertToDocDialog = ({ close }: ConvertToDocDialogProps) => {
+
+  const [openDialog, closeDialog] = useDialog();
+
+  const { orderData, orderDivideItems, setRefreshOrderList, selected } = useDivideStore(state => state);
+
   const [data, setData] = useState({
     customerCompanyId: orderData.order.customerCompanyId,
     customerName: orderData.order.customerName,
     obs: ''
   });
+  const codDoc = useRef<DOC_TYPE.FV | DOC_TYPE.NE>(DOC_TYPE.FV)
 
-  let filteredOrderItems = structuredClone(orderDivideItems)
+  let filteredOrderItems = structuredClone(orderDivideItems);
+
   filteredOrderItems = filteredOrderItems.filter(({ id }) => selected.indexOf(id) !== -1).map(item => {
     const dataTotal = getDataTotalDetalle(item);
     item.taxValue = dataTotal.valorImpuesto;
@@ -92,9 +99,14 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
   }
 
 
+  const handleClickSave = (doc: DOC_TYPE.FV | DOC_TYPE.NE) => {
+    codDoc.current = doc;
+    save();
+  }
 
-  const save = async (codDoc: string) => {
+  const save = async () => {
     try {
+
 
       if (!(data.customerCompanyId > 0)) {
         notify({
@@ -114,7 +126,7 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
 
       const { isConfirmed } = await Swal.fire({
         title: `Convertir a un documento`,
-        html: typeActions[codDoc],
+        html: typeActions[codDoc.current],
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -145,7 +157,7 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
         ...orderResult,
         updateOrder: false,
         saveDoc: true,
-        codDoc,
+        codDoc: codDoc.current,
         quickSale: true,
         items: orderResult.items,
         itemsToPay: orderResult.items,
@@ -170,12 +182,7 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
 
 
           const returnDataSave: OrderToSaveReturnData = JSON.parse(response.payload as string)[0];
-
-          // setPaymentData({
-          //   open: true,
-          //   payload: queryParams
-          // })
-          // resetData();
+          openModalPayment(returnDataSave);
         }
       })
         .catch(() => hideLoader())
@@ -183,6 +190,43 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
 
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  function openModalPayment(params: OrderToSaveReturnData) {
+    openDialog({
+      maxWidth: 'xl',
+      fullScreen: true,
+      children: <Payment close={(e) => returnClosePaymentDialog(e, params)} data={{
+        idCuentaPorCobrar: params.idCuentaPorCobrar,
+        codEstab: params.codEstab
+      }} />
+    })
+
+  }
+
+  function returnClosePaymentDialog<T>(data?: T, params?: OrderToSaveReturnData) {
+    if (data !== null && typeof data === 'object' && params) {
+      printerDoc(params)
+    }
+    //Cerramos dialog Convert to Doc 
+    close();
+
+    //cerramos dialog pago 
+    closeDialog();
+
+    //Refrescamos la ventana de división orden 
+    setRefreshOrderList(DIVIDE_STATUS_REFRESH.REFRESH_ORDER_LIST)
+  }
+
+  function printerDoc(data: OrderToSaveReturnData) {
+    if (data.printerAutomatic) {
+      if (codDoc.current === DOC_TYPE.FV) {
+        getPrinterFactura(data.orderId, data.idDocumento)
+      }
+      if (codDoc.current === DOC_TYPE.NE) {
+        getPrinterNotaEntrega(data.orderId, data.idDocumento)
+      }
     }
   }
 
@@ -229,7 +273,7 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
               size='large'
               fullWidth
               color='success'
-              onClick={() => save(DOC_TYPE.FV)}
+              onClick={() => handleClickSave(DOC_TYPE.FV)}
             >
               Factura
             </Button>
@@ -240,7 +284,7 @@ const ConvertToDocDialog = ({ close, selected }: ConvertToDocDialogProps) => {
               size='large'
               fullWidth
               color="warning"
-              onClick={() => save(DOC_TYPE.NE)}
+              onClick={() => handleClickSave(DOC_TYPE.NE)}
             >
               Nota Entrega
             </Button>

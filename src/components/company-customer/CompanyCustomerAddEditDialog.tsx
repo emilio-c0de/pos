@@ -388,7 +388,7 @@ const CompanyCustomerAddEditDialog = ({ closeDialog, id, dataCustomerSRI }: Prop
         <form onSubmit={formik.handleSubmit} autoComplete='off'>
             <DialogHeader title={
                 id ? "Editar Cliente" : "Nuevo cliente"
-            } close={closeDialog} />
+            } close={() => closeDialog()} />
             <DialogContent dividers >
                 <Tabs
                     value={value}

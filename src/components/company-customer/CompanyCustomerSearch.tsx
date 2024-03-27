@@ -36,7 +36,7 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
     const [value, setValue] = useState(customerName || '')
     const [loading, setLoading] = useState(false);
     const [customers, setCustomers] = useState<Array<CompanyCustomerSearchRead>>([]);
-     
+
     const dataCustomerSRI = useRef<Partial<CompanyCustomer>>({
         identificacionComprador: '',
         razonSocialComprador: '',
@@ -116,20 +116,22 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
         })
     }
 
+
     const onClickNewButton = () => {
         const elem = document.getElementById('customerSearch') as HTMLInputElement;
         const textSearch = elem.value;
 
-       // companyCustomerId.current = 0;
+        // companyCustomerId.current = 0;
         setDataSriEmpty();
-        if (textSearch) {
+        console.log(textSearch)
+        if (textSearch && (textSearch.trim().length === 10 || textSearch.trim().length === 13)) {
             onSearchToSRI(textSearch)
             return
         }
-      //  openAddDialog();
+        //  openAddDialog();
         openDialog({
             maxWidth: 'sm',
-            children: <CompanyCustomerAddEditDialog closeDialog={closeDialog}   />
+            children: <CompanyCustomerAddEditDialog closeDialog={closeDialog} />
         })
 
 
@@ -178,6 +180,7 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
 
     const onSearchToSRI = async function (textSearch: string) {
         try {
+
             if (!(id && typeof id === 'number' && id > 0)) {
                 const isValidID = verificarNumero(textSearch);
                 if (!isValidID) {
@@ -264,8 +267,10 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
                         hideLoader();
                     }
                 }
+                return
             }
 
+            console.log(textSearch)
             openDialog({
                 maxWidth: 'sm',
                 children: <CompanyCustomerAddEditDialog closeDialog={closeDialog} />
@@ -372,7 +377,7 @@ const CompanyCustomerSearch = (props: CompanyCustomerSearchProps) => {
                     onInputChange={(_, newValue) => onInputChange(newValue)}
                     onChange={(_e, value) => {
                         if (callbackfn) {
-                            if(typeof value==='string'){
+                            if (typeof value === 'string') {
                                 setValue(value)
                             }
                             onChange(value)

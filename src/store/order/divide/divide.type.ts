@@ -1,7 +1,6 @@
 import { Order, OrderItem } from "@/models/order.model";
 
 export const enum DIVIDE_STATUS_REFRESH {
-    REFRESH_CONTENT_DIVIDE = "REFRESH_CONTENT_DIVIDE",
     REFRESH_ORDER_LIST = "REFRESH_ORDER_LIST"
 }
 

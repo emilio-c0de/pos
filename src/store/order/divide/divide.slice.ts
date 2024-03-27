@@ -1,26 +1,29 @@
-import { OrderItem } from "@/models/order.model"
+import { orderSvc } from "@/services/order.service"
+import { hideLoader, showLoader } from "@/utils/loader"
 import { produce } from "immer"
 import { create, StateCreator } from "zustand"
 
 import { DIVIDE_STATUS_REFRESH, OrderDataStore, orderDataStoreInitial, OrderItemDivide } from "./divide.type"
 
 interface DivideState<T, U> {
-    REFRESH_CONTENT_DIVIDE?: DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE | null
     REFRESH_ORDER_LIST?: DIVIDE_STATUS_REFRESH.REFRESH_ORDER_LIST | null
     error: string | null
     loading: boolean,
     tempOrderData: T
     orderData: T,
     orderDivideItems: U[]
-    cloneOrderDivideItems: U[]
+    cloneOrderDivideItems: U[],
+    selected: readonly number[]
 }
 
 interface DivideActions<T, U> {
+    getDataOrderById(id: number): void
     initLoadOrderData(orderData: T): void
     setOrderDivideItem(orderData: U[]): void
-    setRefreshContentDivide(data: DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE): void,
     setRefreshOrderList(data: DIVIDE_STATUS_REFRESH.REFRESH_ORDER_LIST): void
     resetState(): void
+    setSelected(newValue: readonly number[]): void
+    handleSelectAllClick(event: React.ChangeEvent<HTMLInputElement>): void
 }
 
 type DivideStateCreator = DivideState<OrderDataStore, OrderItemDivide> & DivideActions<OrderDataStore, OrderItemDivide>
@@ -29,8 +32,7 @@ const createDivideSlice: StateCreator<
     [],
     [],
     DivideStateCreator
-> = (set) => ({
-    REFRESH_CONTENT_DIVIDE: null,
+> = (set, get) => ({
     REFRESH_ORDER_LIST: null,
     error: null,
     loading: false,
@@ -38,6 +40,23 @@ const createDivideSlice: StateCreator<
     orderData: structuredClone(orderDataStoreInitial),
     orderDivideItems: [],
     cloneOrderDivideItems: [],
+    selected: [],
+    getDataOrderById(id) {
+        const { initLoadOrderData } = get();
+        try {
+            showLoader();
+            orderSvc.getId(id).then(response => {
+                initLoadOrderData(response)
+            })
+                .catch(error => {
+                    console.log(error)
+                })
+                .finally(() => hideLoader())
+        } catch (error) {
+            console.log(error)
+            hideLoader();
+        }
+    },
     initLoadOrderData(orderData) {
         set(
             produce((state: DivideStateCreator) => {
@@ -59,23 +78,42 @@ const createDivideSlice: StateCreator<
             })
         )
     },
-    setRefreshContentDivide(data) {
-        set(
-            produce((state: DivideStateCreator) => {
-                state.REFRESH_CONTENT_DIVIDE = data;
-            })
-        )
-    },
     setRefreshOrderList(data) {
+        const { orderData, getDataOrderById } = get();
         set(
             produce((state: DivideStateCreator) => {
                 state.REFRESH_ORDER_LIST = data;
+                state.selected = [];
+            })
+        )
+        getDataOrderById(orderData.order.orderId)
+    },
+
+    setSelected(newValue) {
+        set({
+            selected: newValue
+        })
+    },
+    handleSelectAllClick(event) {
+        const { orderDivideItems } = get();
+        if (event.target.checked) {
+            const newSelected = orderDivideItems.filter(item => (item.remainingQuantity || 0) > 0 && !(item.paid)).map((n) => n.id);
+            set(
+                produce((state: DivideStateCreator) => {
+                    state.selected = newSelected;
+                })
+            )
+            return;
+        }
+        set(
+            produce((state: DivideStateCreator) => {
+                state.selected = [];
+                state.orderDivideItems = state.cloneOrderDivideItems;
             })
         )
     },
     resetState() {
         set({
-            REFRESH_CONTENT_DIVIDE: null,
             REFRESH_ORDER_LIST: null,
             error: null,
             loading: false,
@@ -83,8 +121,9 @@ const createDivideSlice: StateCreator<
             orderData: structuredClone(orderDataStoreInitial),
             orderDivideItems: [],
             cloneOrderDivideItems: [],
+            selected: []
         })
-    }
+    },
 })
 
 

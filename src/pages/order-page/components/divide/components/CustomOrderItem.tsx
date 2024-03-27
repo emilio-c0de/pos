@@ -42,7 +42,7 @@ type CustomOrderItemProps = {
 const CustomOrderItem = ({ close }: CustomOrderItemProps) => {
     const [openDialog, closeDialog] = useDialog();
 
-    const { orderData, setRefreshContentDivide, setRefreshOrderList } = useDivideStore(state => state);
+    const { orderData, setRefreshOrderList } = useDivideStore(state => state);
     const { dataFormPos } = useSharedStore(state => state);
 
     const [customOrderItems, setCustomOrderItems] = useState<OrderItem[]>(orderData.order.items);
@@ -265,14 +265,13 @@ const CustomOrderItem = ({ close }: CustomOrderItemProps) => {
             if (data !== null && typeof data === 'object') {
                 printerDoc(params)
             }
-            //Cerramos ventana custom item
+            //Cerramos ventana custom item 
             close();
 
             //cerramos dialog pago 
             closeDialog();
 
-            //Refrescamos la ventana de división orden
-            setRefreshContentDivide(DIVIDE_STATUS_REFRESH.REFRESH_CONTENT_DIVIDE)
+            //Refrescamos la ventana de división orden 
             setRefreshOrderList(DIVIDE_STATUS_REFRESH.REFRESH_ORDER_LIST)
         }
     }

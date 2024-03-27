@@ -1,13 +1,12 @@
-
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText'; 
-import { useNavigate } from 'react-router-dom';
-import { PrivateRoutes } from '@/routes';
-import styled from '@mui/system/styled';
 import { BarChartIcon, HomeIcon, PeopleIcon, PointOfSaleIcon, ShoppingCartIcon } from '@/components/common/IconsMaterial';
-import { useState } from 'react';
-import { ListItemButton } from '@mui/material';
 import { themePalette } from '@/config/theme.config';
+import { PrivateRoutes } from '@/routes';
+import { ListItemButton } from '@mui/material';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import styled from '@mui/system/styled';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Definir el estilo común
 const commonIconStyle = { color: themePalette.PINK };
@@ -42,7 +41,7 @@ const menuItems: Array<MenuItem> = [
 
 export const MenuRoutes = () => {
     const navigate = useNavigate();
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(1);
 
     const handleListItemClick = (menuItem: MenuItem, index: number) => {
         navigate(`/${menuItem.route}`, { replace: true });

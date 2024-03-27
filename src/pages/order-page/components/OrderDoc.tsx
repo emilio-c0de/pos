@@ -202,7 +202,7 @@ const OrderDoc = ({ id, data, close }: OrderDocProps) => {
             <DialogHeader title='Documentos Relacionados' close={() => close()} />
             <DialogContent dividers>
                 <Grid container>
-                    <Grid item xl={10} lg={10} md={6} sm={6} xs={6}>
+                    <Grid item xl={10} lg={10} md={10} sm={10} xs={6}>
                         <Typography variant="subtitle1" component="div">
                             Detalle del pedido
                         </Typography>
@@ -239,32 +239,40 @@ const OrderDoc = ({ id, data, close }: OrderDocProps) => {
                         </table>
 
                     </Grid>
-                    <Grid item xl={2} lg={2} md={6} sm={6} xs={6}>
-                        <Stack spacing={1}>
+                    <Grid item xl={2} lg={2} md={2} sm={2} xs={6}>
+                        <Stack spacing={1} direction={{ xs: 'column', sm: 'column', md: 'column', lg: 'column' }}>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                size='small'
+                                size='medium'
                                 onClick={printOrder}
+                                startIcon={<PrintIcon />}
                             >
-                                <PrintIcon />
-                                IMPRIMIR
+                                
+                                <Typography sx={{ display: { xs: 'none', md: 'block' } }}>
+                                    Imprimir
+
+                                </Typography>
                             </Button>
                             <Button
                                 variant="contained"
                                 color="info"
-                                size='small'
-                                onClick={reportOrderPDF}  >
-                                <SaveAltSharpIcon />
-                                PDF
+                                size='medium'
+                                onClick={reportOrderPDF} startIcon={
+                                    <SaveAltSharpIcon />} >
+                                <Typography variant='body2' sx={{ display: { xs: 'none', md: 'block' } }}>
+                                    PDF
+                                </Typography>
                             </Button>
                             <Button
                                 variant="contained"
                                 color='success'
+                                size='medium'
                                 onClick={sendWhatsAppOrder}
-                                fullWidth
-                                startIcon={<WhatsAppIcon />} >
-                                WHATSAPP
+                                fullWidth startIcon={  <WhatsAppIcon />} >
+                                <Typography sx={{ display: { xs: 'none', md: 'block' } }}>
+                                    WhatsApp 
+                                </Typography>
                             </Button>
                         </Stack>
                     </Grid>

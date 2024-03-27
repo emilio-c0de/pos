@@ -1,12 +1,9 @@
 import ErrorBoundary from '@/components/common/ErrorBoundary';
-import { EditNoteIcon, NextPlanIcon } from '@/components/common/IconsMaterial';
-import { useDialog } from '@/context/DialogProvider';
 import { useDivideStore } from '@/store/order/divide/divide.slice';
 import { OrderItemDivide } from '@/store/order/divide/divide.type';
 import { pricingCalculateUtil } from '@/utils/pricing-calculate.util';
-import { notify, ToastType } from '@/utils/toastify/toastify.util';
 import { ccyFormat } from '@/utils/utils';
-import { Button, Divider, Stack, Typography } from '@mui/material';
+import { Divider, Stack, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
@@ -14,197 +11,23 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Toolbar from '@mui/material/Toolbar';
-import * as React from 'react';
 
-import ConvertToDocDialog from './ConvertToDocDialog';
-import CustomOrderItem from './CustomOrderItem';
-import InputRemainingQuantity from './InputRemainingQuantity';
-
-interface EnhancedTableProps {
-    numSelected: number;
-    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-    const { orderDivideItems } = useDivideStore(state => state);
-    const { onSelectAllClick, numSelected, rowCount } = props;
-    const isUnchangedQuantity = orderDivideItems.every(i => i.paid && i.remainingQuantityReal ===0);
-
-
-    return (
-        <TableHead>
-            <TableRow sx={{
-                "& th": {
-                    fontWeight: 600,
-                    fontSize: '0.875rem'
-                }
-            }}>
-                <TableCell padding="checkbox">
-                    <Checkbox
-                        color="primary"
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                        disabled={isUnchangedQuantity}
-                        inputProps={{
-                            'aria-label': 'select all desserts',
-                        }}
-                    />
-                </TableCell>
-                <TableCell component="th" align='center'>Nro.</TableCell>
-                <TableCell component="th" align='center'>Código</TableCell>
-                <TableCell component="th" align='center'>Descripción</TableCell>
-                <TableCell component="th" align='center'>Cantidad Real</TableCell>
-                <TableCell component="th" align='center'>Cantidad</TableCell>
-                <TableCell component="th" align='center'>Precio incluido IVA</TableCell>
-                <TableCell component="th" align='center'>Total</TableCell>
-            </TableRow>
-        </TableHead>
-    );
-}
-
-interface EnhancedTableToolbarProps {
-    numSelected: number;
-    rowCount: number
-    selected: readonly number[]
-}
-
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-    const { orderDivideItems } = useDivideStore(state => state);
-
-    const [openDialog, closeDialog,] = useDialog();
-    const isUnchangedQuantity = orderDivideItems.every(i => (i.remainingQuantity || 0) > 0 && i.quantity === (i.remainingQuantity || 0));
-
-    const { numSelected, selected, rowCount } = props;
-
-    const openCustomOrderItemDialog = () => {
-        openDialog({
-            maxWidth: 'md',
-            children: <CustomOrderItem close={closeDialog} />
-        })
-    }
-
-    const openConvertToDocDialog = () => {
-        if (selected.length === 0) {
-            notify({
-                type: ToastType.Warning,
-                content: 'Seleccione al menos un item'
-            })
-            return
-        }
-        openDialog({
-            maxWidth: 'xs',
-            children: <ConvertToDocDialog close={closeDialog} selected={selected} />
-        })
-    }
-
-
-    return (
-        <Toolbar
-            sx={{
-                pl: { sm: 2 },
-                pr: { xs: 1, sm: 1 },
-                // ...(numSelected > 0 && {
-                //     bgcolor: (theme) =>
-                //         alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                // }),
-            }}
-        >
-            {numSelected > 0 ? (
-                <Typography
-
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {`${numSelected} ${numSelected === 1 ? 'Seleccionado' : 'Seleccionados'}`}
-                </Typography>
-            ) : ''}
-            <Box sx={{ flexGrow: 1 }} />
-            {
-                numSelected > 0 ? (
-
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <Stack spacing={1} direction="row">
-                            {
-                                rowCount === numSelected && isUnchangedQuantity && (
-                                    <Button variant='contained' color='info' size='large' onClick={openCustomOrderItemDialog} >
-                                        <EditNoteIcon /> Personalizado
-                                    </Button>
-                                )
-                            }
-                            <Button variant='contained' size='large' color='success' onClick={openConvertToDocDialog} >
-                                <NextPlanIcon /> Continuar
-                            </Button>
-                            {/* <Button variant='contained' color='warning' size='large' >
-                                Nota Entrega
-                            </Button> */}
-
-                        </Stack>
-                    </Box>
-                ) : ''
-            }
-
-
-            {/* {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Nutrition
-                </Typography>
-            )}
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )} */}
-        </Toolbar>
-    );
-}
-
-
-
+import EnhancedTableHead from './components/EnhancedTableHead';
+import EnhancedTableToolbar from './components/EnhancedTableToolbar';
+import InputRemainingQuantity from './components/InputRemainingQuantity';
 
 export default function DivideContent() {
 
-    const { orderData, setOrderDivideItem, orderDivideItems, cloneOrderDivideItems } = useDivideStore(state => state);
-    const [selected, setSelected] = React.useState<readonly number[]>([]);
+    const {
+        orderData,
+        setOrderDivideItem,
+        orderDivideItems,
+        cloneOrderDivideItems,
+        selected,
+        setSelected
+    } = useDivideStore(state => state);
 
-
-
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            const newSelected = orderDivideItems.filter(item => (item.remainingQuantity || 0) > 0 && !(item.paid)).map((n) => n.id);
-            setSelected(newSelected);
-            return;
-        }
-        setSelected([]);
-        setOrderDivideItem(cloneOrderDivideItems)
-    };
 
     const handleClick = (id: number) => {
 
@@ -229,10 +52,8 @@ export default function DivideContent() {
         }
     };
 
-
-
     const isSelected = (id: number) => selected.indexOf(id) !== -1;
- 
+
 
     const changeInputQuantity = (qty: number, uuid: string) => {
         const updatedItems = orderDivideItems.map(item => {
@@ -268,7 +89,7 @@ export default function DivideContent() {
         <ErrorBoundary fallBackComponent={<>Error load component</>}>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <EnhancedTableToolbar numSelected={selected.length} rowCount={orderDivideItems.length} selected={selected} />
+                    <EnhancedTableToolbar />
 
                     <TableContainer>
                         <Table
@@ -276,16 +97,12 @@ export default function DivideContent() {
                             aria-labelledby="tableTitle"
                             size={'medium'}
                         >
-                            <EnhancedTableHead
-                                numSelected={selected.length}
-                                onSelectAllClick={handleSelectAllClick}
-                                rowCount={orderDivideItems.length}
-                            />
+                            <EnhancedTableHead />
                             <TableBody >
                                 {orderDivideItems.map((row, index) => {
                                     const isItemSelected = isSelected(row.id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
-                           
+
                                     return (
                                         <TableRow
                                             style={{ backgroundColor: 'transparent' }}
