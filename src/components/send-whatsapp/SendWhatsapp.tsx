@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 import { CODE_REPORT, DOC_TYPE } from '@/constants/constants'
 import { sharedSvc } from '@/services/shared.service'
 import { ToastType, notify } from '@/utils/toastify/toastify.util'
-import { hideLoader, showLoader } from '@/utils/loader'
+import { hideLoader, showLoader } from '@/utils/loader' 
 
 const URL_API_WHATSAPP = import.meta.env.URL_API_WHATSAPP;
  
