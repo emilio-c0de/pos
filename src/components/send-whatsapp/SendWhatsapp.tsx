@@ -10,11 +10,10 @@ import { sharedSvc } from '@/services/shared.service'
 import { ToastType, notify } from '@/utils/toastify/toastify.util'
 import { hideLoader, showLoader } from '@/utils/loader'
 
-const URL_API_WHATSAPP = "https://api.green-api.com/";
-const ID_INSTANCE = "7103845341"
-const API_TOKEN_INSTANCE = "a59cd09ed1f449d8981586c7cf24526dfa9c8e6eedf1489b8c";
-const URL_FILE_UPLOAD = `/waInstance${ID_INSTANCE}/sendFileByUpload/${API_TOKEN_INSTANCE}`;
-const URL_SMS = `/waInstance${ID_INSTANCE}/sendMessage/${API_TOKEN_INSTANCE}`
+const URL_API_WHATSAPP = import.meta.env.URL_API_WHATSAPP;
+ 
+const URL_FILE_UPLOAD = import.meta.env.URL_FILE_UPLOAD;
+const URL_SMS = import.meta.env.URL_SMS 
 
 const http = axios.create({
     baseURL: URL_API_WHATSAPP
