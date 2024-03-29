@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { MenuRoutes } from './components/MenuRoutes';
+import UserRoleInfo from './components/UserRoleInfo';
 
 const drawerWidth: number = 190;
 
@@ -203,19 +204,23 @@ export default function Dashboard() {
             variant="h6"
             color="inherit"
             noWrap
-            sx={{ flexGrow: 1 }}
+            sx={{ 
+              flexGrow: 1,
+              display: {xs: 'none', sm: 'none', lg:'block'}
+             }}
           >
             AcontPlus POS
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
+          <UserRoleInfo/>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="success">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
-            <IconButton
+            {/* <IconButton
               size="large"
               aria-label="show 17 new notifications"
 
@@ -223,7 +228,7 @@ export default function Dashboard() {
               <Badge badgeContent={17} color="warning" >
                 <NotificationsIcon sx={{ color: "#fff" }} />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               edge="end"

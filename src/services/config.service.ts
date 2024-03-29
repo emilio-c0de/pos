@@ -57,12 +57,32 @@ const getDataForm = async <T extends { codEstab: string }>(obj: T) => {
             dataPopulatedTax,
             configSistema,
             vendedores,
-        } 
+        }
         return dataForm;
     }
 }
 
 
+const getMainDataEstab = async () => {
+    const json = JSON.stringify({ tipo: 1 })
+    const responseApi = await http({
+        method: 'get',
+        url: `${PATHS_API.PRIVATE}${PATHS.CONFIG}`,
+        params: {
+            json
+        },
+    })
+    const { estabs, bodegas } = responseApi.data;
+    const establecimientos = groupEstabUtil({
+        puntosEmisionEstab: estabs,
+        bodegasEstab: bodegas,
+        isGroupBodega: true,
+        isGroupPuntoEmision: true
+    })
+    return establecimientos;
+}
+
 export const configSvc = {
-    getDataForm
+    getDataForm,
+    getMainDataEstab
 }

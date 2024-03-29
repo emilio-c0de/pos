@@ -32,6 +32,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
+import ModeTwoToneIcon from '@mui/icons-material/ModeTwoTone';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import MoreIcon from "@mui/icons-material/MoreVert";
 import MoveUpIcon from '@mui/icons-material/MoveUp';
@@ -136,4 +137,5 @@ export {
     VisibilityIcon, //✅
     EditNoteIcon, //✅
     NextPlanIcon,  //✅
+    ModeTwoToneIcon, //✅
 }
